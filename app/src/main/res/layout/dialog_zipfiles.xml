@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:background="@drawable/cardborder"
+
+    app:cardCornerRadius="@dimen/_12sdp"
+    android:elevation="@dimen/_10sdp"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:padding="@dimen/_10sdp"
+        android:layout_height="wrap_content">
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:background="@color/tranparent"
+        android:paddingStart="@dimen/_10sdp"
+
+        android:textAllCaps="false"
+        android:id="@+id/btnextracthere"
+        android:text="@string/extract_here"
+        tools:ignore="RtlSymmetry" />
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:background="#c0c0c0" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:textAllCaps="false"
+        android:id="@+id/btnextractto"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:background="@color/tranparent"
+        android:paddingStart="@dimen/_10sdp"
+        android:text="@string/extract_to"/>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:background="#c0c0c0" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/_10sdp"
+        android:id="@+id/btncancel"
+        android:background="@color/tranparent"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:gravity="center_vertical"
+        android:text="@string/cancel"
+        tools:ignore="RtlSymmetry" />
+
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFA000</color>
+    <color name="colorPrimaryDark">#060509</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="tranparent">#0003DAC5</color>
+    <color name="background">#F3F5F7</color>
+    <color name="gray">#CDCDCD</color>
+    <color name="grayd">#FFA000</color>
+    <color name="grayas">#717171</color>
+
+
+
+
+    <color name="PPT">#E65C39</color>
+    <color name="PDF">#F26D6D</color>
+    <color name="DOCX">#0E86FE</color>
+    <color name="EXCEL">#2BCD86</color>
+    <color name="TEXT">#29ABE2</color>
+    <color name="AUDIO">#6AA34E</color>
+    <color name="APK">#2CBFB1</color>
+    <color name="IMAGE">#CC97AA</color>
+    <color name="OTHER">#7264A6</color>
+    <color name="MP4">#D99255</color>
+    <color name="internalstorage">#4D9350</color>
+
+</resources>

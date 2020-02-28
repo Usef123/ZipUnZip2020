@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".Activities.DisplayAllFilesActivity">
+
+    <include
+        layout="@layout/app_bar"
+        android:id="@+id/displayallfilestoolbar"
+        />
+
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:id="@+id/allfilesProgressbar"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/displayallfilestoolbar"
+        android:id="@+id/allfiles_RecyclerView"
+        android:scrollbars="vertical"
+         android:scrollbarThumbVertical="@android:color/darker_gray"
+         android:scrollbarSize="5dp"
+        android:layout_above="@id/bottomsheetlayout"
+        android:layoutAnimation="@anim/layout_animation"
+        android:padding="@dimen/_10sdp"/>
+
+    <include
+        layout="@layout/bottom_sheet_layout"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/bottomsheetlayout"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+   <include
+        layout="@layout/dialog_make_zipfiles"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/dialogmakezipfile"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
+
+
+</RelativeLayout>

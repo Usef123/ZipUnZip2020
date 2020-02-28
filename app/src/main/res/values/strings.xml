@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">ZipUnZip</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Zip Files</string>
+    <string name="title_notifications">Locked Files</string>
+    <string name="storage">Storage</string>
+    <string name="categories">Categories</string>
+    <string name="internal_storage">Internal Storage</string>
+    <string name="videos">Videos</string>
+
+    <!--    Categories of files-->
+
+    <string name="pptfiles">PPT Files</string>
+    <string name="docsfiles">Word Files</string>
+    <string name="pdffiles">PDF Files</string>
+    <string name="xlxs">Excel Files</string>
+    <string name="audio">Audio Files</string>
+    <string name="video">Video Files</string>
+    <string name="image">Image Files</string>
+    <string name="apk">APK Files</string>
+    <string name="txt">Text Files</string>
+    <string name="othersfiles">Other Files</string>
+    <string name="internal_stora">Internal Storage</string>
+    <string name="extract_here">Extract at File Location</string>
+    <string name="extract_to">Extract to</string>
+    <string name="cancel">Cancel</string>
+    <string name="locked">Locked</string>
+    <string name="extract_files_here">Extract Files Here</string>
+
+</resources>

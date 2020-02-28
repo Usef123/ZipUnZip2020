@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:clickable="true"
+    android:layout_margin="@dimen/_5sdp"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:id="@+id/reqsq">
+        <ImageView
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:layout_marginEnd="@dimen/_8sdp"
+            android:id="@+id/img"
+            android:layout_centerInParent="true"
+            android:cropToPadding="true"
+            android:focusable="true"
+            android:layout_gravity="center"
+            />
+        <ImageView
+            android:id="@+id/imgPlayVidesdasd"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerInParent="true"
+            android:adjustViewBounds="true" />
+
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/internal_foldername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_18sdp"
+        android:layout_toEndOf="@+id/reqsq"
+        android:ellipsize="marquee"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:focusable="true"
+        android:textColor="#4D4D4D"
+        android:focusableInTouchMode="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:layout_toStartOf="@+id/rcv_check"
+        android:textSize="@dimen/_15sdp" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/rcv_check"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true" />
+
+    <View
+        android:id="@+id/view21"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:layout_below="@+id/reqsq"
+        android:background="#c0c0c0" />
+
+
+</RelativeLayout>
