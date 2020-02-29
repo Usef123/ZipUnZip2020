@@ -7,21 +7,22 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.ZipFiles.ZipFileFragment">
 
-    <ProgressBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <com.wang.avi.AVLoadingIndicatorView
+
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_100sdp"
         android:id="@+id/progressbarrzipfiles"
+        app:indicatorName="BallGridPulseIndicator"
+        app:indicatorColor="@color/colorPrimary"
         android:layout_centerInParent="true"
         />
     <com.wang.avi.AVLoadingIndicatorView
         android:id="@+id/avi"
+        style="@style/AVLoadingIndicatorView.Small"
         android:layout_width="@dimen/_100sdp"
         android:layout_height="@dimen/_100sdp"
-        style="@style/AVLoadingIndicatorView.Small"
-
         android:layout_centerInParent="true"
         app:indicatorName="BallGridPulseIndicator"
-        app:indicatorColor="@color/OTHER"
     />
 
     <include

@@ -18,6 +18,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.naveed.zipunzip.Activities.DisplayAllFilesActivity;
 import com.naveed.zipunzip.Adapters.MainDataAdapter;
 import com.naveed.zipunzip.R;
@@ -25,6 +29,8 @@ import com.naveed.zipunzip.Models.mainGridViewData;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import static com.naveed.zipunzip.Activities.DisplayAllFilesActivity.counter;
 
 public class HomeFragment extends Fragment implements MainDataAdapter.onClickCardview {
 
@@ -40,6 +46,35 @@ public class HomeFragment extends Fragment implements MainDataAdapter.onClickCar
     DecimalFormat outputFormat ;
     CardView cv;
 
+    InterstitialAd interstitialAd;
+
+    public void reqNewInterstitial() {
+        interstitialAd = new InterstitialAd(getActivity());
+        interstitialAd.setAdUnitId(getResources().getString(R.string.Interstitial_ID));
+        interstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+    AdView adView1;
+
+    private void BannerAd(View root) {
+        adView1 = root.findViewById(R.id.adViewhome);
+        AdRequest adrequest = new AdRequest.Builder()
+                .build();
+        adView1.loadAd(adrequest);
+        adView1.setAdListener(new AdListener() {
+
+            @Override
+            public void onAdLoaded() {
+                adView1.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAdFailedToLoad(int error) {
+                adView1.setVisibility(View.GONE);
+            }
+
+        });
+    }
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -47,6 +82,8 @@ public class HomeFragment extends Fragment implements MainDataAdapter.onClickCar
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         IntializeViews(root);
         DisplayingStorageOfDevice();
+        reqNewInterstitial();
+        BannerAd(root);
 
         Log.d("ad", "onCreateView: ");
 
@@ -60,11 +97,35 @@ public class HomeFragment extends Fragment implements MainDataAdapter.onClickCar
         cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = "";
-                Intent intent = new Intent(getActivity(), DisplayAllFilesActivity.class);
-                intent.putExtra("category", "Internal Storage");
-                intent.putExtra("loc" , "");
-                startActivity(intent);
+
+                    if (interstitialAd.isLoaded()&&counter%3 == 0) {
+
+                            interstitialAd.show();
+
+                    } else {
+                        reqNewInterstitial();
+                        String name = "";
+                        Intent intent = new Intent(getActivity(), DisplayAllFilesActivity.class);
+                        intent.putExtra("category", "Internal Storage");
+                        intent.putExtra("loc" , "");
+                        startActivity(intent);
+
+                    }
+                    interstitialAd.setAdListener(new AdListener() {
+                        @Override
+                        public void onAdClosed() {
+
+                            reqNewInterstitial();
+                            String name = "";
+                            Intent intent = new Intent(getActivity(), DisplayAllFilesActivity.class);
+                            intent.putExtra("category", "Internal Storage");
+                            intent.putExtra("loc" , "");
+                            startActivity(intent);
+
+                        }
+                    });
+
+
             }
         });
 
@@ -99,17 +160,41 @@ public class HomeFragment extends Fragment implements MainDataAdapter.onClickCar
         freeSpaceText = root.findViewById(R.id.freeSpace);
         progressIndicator = root.findViewById(R.id.indicator);
         mainRecylcerView = root.findViewById(R.id.categoriesRecyclerview);
+
         cv = root.findViewById(R.id.cv);
     }
 
     @Override
-    public void onCardViewClick(int postion) {
+    public void onCardViewClick(final int postion) {
 
-        String name = buttonlist.get(postion).getItemTitle();
-        Intent intent = new Intent(getActivity(), DisplayAllFilesActivity.class);
-        intent.putExtra("category", name);
-        intent.putExtra("loc" , "");
-        startActivity(intent);
+
+            if (interstitialAd.isLoaded() && counter%3 == 0) {
+                    interstitialAd.show();
+            }
+            else {
+                reqNewInterstitial();
+                String name = buttonlist.get(postion).getItemTitle();
+                Intent intent = new Intent(getActivity(), DisplayAllFilesActivity.class);
+                intent.putExtra("category", name);
+                intent.putExtra("loc" , "");
+                startActivity(intent);
+
+            }
+            interstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdClosed() {
+
+                    reqNewInterstitial();
+                    String name = buttonlist.get(postion).getItemTitle();
+                    Intent intent = new Intent(getActivity(), DisplayAllFilesActivity.class);
+                    intent.putExtra("category", name);
+                    intent.putExtra("loc" , "");
+                    startActivity(intent);
+
+                }
+            });
+
+
     }
 
     public static class DeviceMemory {

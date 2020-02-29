@@ -8,13 +8,23 @@
 
     tools:context=".Fragments.home.HomeFragment">
 
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adViewhome"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/_6sdp"
+        android:layout_height="wrap_content"
+        ads:adSize="BANNER"
+        android:layout_alignParentTop="true"
+        ads:adUnitId="@string/Banner_ID" />
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="@dimen/_80sdp"
         android:layout_rowWeight="1"
         android:layout_marginEnd="@dimen/_5sdp"
         android:layout_marginStart="@dimen/_5sdp"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/adViewhome"
         android:layout_columnWeight="1"
         android:id="@+id/cv"
         app:cardCornerRadius="@dimen/_12sdp">

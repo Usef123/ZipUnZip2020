@@ -12,16 +12,17 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-
         android:theme="@style/AppTheme">
+        <activity android:name=".Activities.MainActivity"></activity>
         <activity
             android:name=".Activities.DisplayAllFilesActivity"
-            android:theme="@style/AppTheme1"
             android:parentActivityName=".Activities.MainActivity"
-            android:screenOrientation="locked"/>
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme1" />
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".Activities.SplashScreenActivity"
             android:label="@string/app_name"
+            android:theme="@style/AppTheme1"
             android:screenOrientation="locked">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +30,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/app_ID" />
     </application>
 
 </manifest>

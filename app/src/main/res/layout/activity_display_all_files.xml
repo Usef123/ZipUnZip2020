@@ -12,18 +12,41 @@
         android:id="@+id/displayallfilestoolbar"
         />
 
-    <ProgressBar
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adViewlight"
         android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_below="@+id/displayallfilestoolbar"
         android:layout_height="wrap_content"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/Banner_ID" />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_100sdp"
         android:layout_centerInParent="true"
-        android:visibility="gone"
+        app:indicatorName="BallGridPulseIndicator"
+        app:indicatorColor="@color/colorPrimary"
+        style="@style/AVLoadingIndicatorView.Small"
         android:id="@+id/allfilesProgressbar"
+        />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/avidisplayallfiles"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_100sdp"
+        style="@style/AVLoadingIndicatorView.Small"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        app:indicatorName="BallGridPulseIndicator"
+        app:indicatorColor="@color/colorPrimary"
         />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/displayallfilestoolbar"
+        android:layout_below="@+id/adViewlight"
         android:id="@+id/allfiles_RecyclerView"
         android:scrollbars="vertical"
          android:scrollbarThumbVertical="@android:color/darker_gray"

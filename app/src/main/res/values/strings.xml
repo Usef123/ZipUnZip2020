@@ -27,4 +27,11 @@
     <string name="locked">Locked</string>
     <string name="extract_files_here">Extract Files Here</string>
 
+
+    <!--test Ads-->
+    <string name="Banner_ID">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="app_ID">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="Interstitial_ID">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="native_id">ca-app-pub-3940256099942544/2247696110</string>
+
 </resources>

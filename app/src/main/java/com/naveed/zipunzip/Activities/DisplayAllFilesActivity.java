@@ -35,14 +35,22 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.example.flatdialoglibrary.dialog.FlatDialog;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.material.snackbar.Snackbar;
 import com.naveed.zipunzip.Adapters.DisplayFilesADapterClass;
 import com.naveed.zipunzip.Adapters.InternalStorageListAdapter;
+import com.naveed.zipunzip.Fragments.ZipFiles.ZipFileFragment;
 import com.naveed.zipunzip.Models.DisplayFilesModelClass;
 import com.naveed.zipunzip.Models.InternalStorageModelClass;
 import com.naveed.zipunzip.R;
 import com.rahman.dialog.Activity.SmartDialog;
 import com.rahman.dialog.ListenerCallBack.SmartDialogClickListener;
 import com.rahman.dialog.Utilities.SmartDialogBuilder;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
@@ -70,6 +78,7 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
     RecyclerView recyclerView;
     DisplayFilesADapterClass adapter;
     InternalStorageListAdapter ISadapter;
+    String name;
 
     MenuItem archive;
 
@@ -77,9 +86,10 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
 
     ArrayList<InternalStorageModelClass> fileList;
     ArrayList<DisplayFilesModelClass> ModelClasslist;
-    ArrayList<String> SelectedItemArrayList;
+    ArrayList<String> SelectedItemLocationArrayList;
+    ArrayList<DisplayFilesModelClass> SelectedItemArrayList;
 
-    ProgressBar progressBar;
+    AVLoadingIndicatorView progressBar;
     String previouspath;
     File root;
     View bottomsheetLayout;
@@ -89,8 +99,40 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
     Button cancelbtnzip, addfiletozipbtn;
     //FolderListAdapter adapter;
     String category;
+    InterstitialAd interstitialAd;
 
+    public static int counter = 0;
+    int colorDailogbtn = 0;
     String location;
+    AVLoadingIndicatorView avi;
+    Color color;
+
+    public void reqNewInterstitial() {
+        interstitialAd = new InterstitialAd(this);
+        interstitialAd.setAdUnitId(getResources().getString(R.string.Interstitial_ID));
+        interstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+    AdView adView1;
+
+    private void BannerAd() {
+        adView1 = findViewById(R.id.adViewlight);
+        AdRequest adrequest = new AdRequest.Builder()
+                .build();
+        adView1.loadAd(adrequest);
+        adView1.setAdListener(new AdListener() {
+
+            @Override
+            public void onAdLoaded() {
+                adView1.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAdFailedToLoad(int error) {
+                adView1.setVisibility(View.GONE);
+            }
+
+        });
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -105,9 +147,13 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
         extractbtn = findViewById(R.id.startextracting);
         cancelbtnzip = findViewById(R.id.cancelzipfilebtn);
         addfiletozipbtn = findViewById(R.id.makezipfilebtn);
-
+        avi = findViewById(R.id.avidisplayallfiles);
+        avi.setIndicatorColor(getResources().getColor(R.color.colorPrimary));
+        avi.hide();
+        reqNewInterstitial();
+        BannerAd();
+        SelectedItemLocationArrayList= new ArrayList<>();
         SelectedItemArrayList = new ArrayList<>();
-
 
         Intent i = getIntent();
         category = i.getStringExtra("category");
@@ -117,7 +163,6 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
         } else {
             bottomsheetLayout.setVisibility(View.VISIBLE);
         }
-        Toast.makeText(this, category, Toast.LENGTH_LONG).show();
         ModelClasslist = new ArrayList<>();
         fileList = new ArrayList<>();
 
@@ -131,47 +176,74 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
                 ModelClasslist = new ArrayList<>();
                 new PPTAsyncTask().execute();
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#E65C39")));
+                addfiletozipbtn.setBackground(getDrawable(R.drawable.bgbuttonppt));
+                progressBar.setIndicatorColor(getColor(R.color.PPT));
+                colorDailogbtn = getColor(R.color.PPT);
+
                 break;
             case "Word Files":
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0E86FE")));
                 ModelClasslist = new ArrayList<>();
+                progressBar.setIndicatorColor(getColor(R.color.DOCX));
+                addfiletozipbtn.setBackground(getDrawable(R.drawable.bgbuttonword));
                 new WordAsyncTask().execute();
+                colorDailogbtn = getColor(R.color.DOCX);
                 break;
             case "PDF Files":
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#F26D6D")));
                 ModelClasslist = new ArrayList<>();
+                progressBar.setIndicatorColor(getColor(R.color.PDF));
+                addfiletozipbtn.setBackground(getDrawable(R.drawable.bgbuttonpdf));
+                colorDailogbtn = getColor(R.color.PDF);
                 new PDfAsyncTask().execute();
                 break;
             case "Excel Files":
                 ModelClasslist = new ArrayList<>();
                 new XLXSAsyncTask().execute();
+                progressBar.setIndicatorColor(getColor(R.color.EXCEL));
+                addfiletozipbtn.setBackground(getDrawable(R.drawable.bgbuttonexcel));
+                colorDailogbtn = getColor(R.color.EXCEL);
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#2BCD86")));
                 break;
             case "Audio Files":
                 getAllAudios();
+                progressBar.setIndicatorColor(getColor(R.color.AUDIO));
+                addfiletozipbtn.setBackground(getDrawable(R.drawable.bgbuttonaudio));
+                colorDailogbtn = getColor(R.color.AUDIO);
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#6AA34E")));
                 break;
             case "Video Files":
                 getAllVideos();
+                progressBar.setIndicatorColor(getColor(R.color.MP4));
+                addfiletozipbtn.setBackground(getDrawable(R.drawable.bgbuttonvideo));
+                colorDailogbtn = getColor(R.color.MP4);
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#D99255")));
                 break;
             case "Image Files":
                 getAllImages();
+                progressBar.setIndicatorColor(getColor(R.color.IMAGE));
+                addfiletozipbtn.setBackground(getDrawable(R.drawable.bgbuttonimages));
+                colorDailogbtn = getColor(R.color.IMAGE);
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#CC97AA")));
                 break;
             case "APK Files":
                 ModelClasslist = new ArrayList<>();
+                progressBar.setIndicatorColor(getColor(R.color.APK));
+                addfiletozipbtn.setBackground(getDrawable(R.drawable.bgbuttonapk));
+                colorDailogbtn = getColor(R.color.APK);
                 new APKAsyncTask().execute();
+
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#2CBFB1")));
                 break;
             case "Text Files":
-
                 ModelClasslist = new ArrayList<>();
                 new TEXTAsyncTask().execute();
+                colorDailogbtn = getColor(R.color.TEXT);
+                addfiletozipbtn.setBackground(getDrawable(R.drawable.bgbuttontext));
+                progressBar.setIndicatorColor(getColor(R.color.TEXT));
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#29ABE2")));
                 break;
             case "Internal Storage":
-                Toast.makeText(this, category, Toast.LENGTH_SHORT).show();
                 getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFA000")));
                 getInternalStorage();
                 break;
@@ -189,21 +261,10 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
             @Override
             public void onClick(View v) {
 
+                new UNZipAsyncTask().execute();
+                ISadapter.notifyDataSetChanged();
                 bottomsheetLayout.setVisibility(View.GONE);
-                new SmartDialogBuilder(DisplayAllFilesActivity.this)
-                        .setTitle("Successfully UnZipped")
-                        .setSubTitle("Please Check Folder With App name In Internal Storage \n\n" +
-                                Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name))
-                        .setCancalable(false)
-                        .setNegativeButtonHide(true) //hide cancel button
-                        .setPositiveButton("OK", new SmartDialogClickListener() {
-                            @Override
-                            public void onClick(SmartDialog smartDialog) {
-                                new ZipAsyncTask().execute();
-                                ISadapter.notifyDataSetChanged();
-                                smartDialog.dismiss();
-                            }
-                        }).build().show();
+
             }
         });
 
@@ -216,51 +277,76 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
         addfiletozipbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addingToZipFile();
 
-                if (SelectedItemArrayList.size() > 0) {
-                    try {
-                        zipper(SelectedItemArrayList, "Testing");
-                        new SmartDialogBuilder(DisplayAllFilesActivity.this)
-                                .setTitle("Successfully Zipped")
-                                .setSubTitle("Please Check Folder With App name In Internal Storage \n\n" +
-                                        Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name))
-                                .setCancalable(false)
-                                .setNegativeButtonHide(true) //hide cancel button
-                                .setPositiveButton("OK", new SmartDialogClickListener() {
-                                    @Override
-                                    public void onClick(SmartDialog smartDialog) {
-                                        smartDialog.dismiss();
-                                    }
-                                }).build().show();
-                        Toast.makeText(DisplayAllFilesActivity.this, "Succecfully Zipped Please CheckApp folder", Toast.LENGTH_SHORT).show();
+                final FlatDialog flatDialog = new FlatDialog(DisplayAllFilesActivity.this);
+                flatDialog.setTitle("Please Enter File Name")
+                        .setTitleColor(getResources().getColor(R.color.grayas))
+                        .setFirstTextFieldHint("e.g ZipFileImage")
+                        .setFirstTextFieldHintColor(getResources().getColor(R.color.grayas))
+                        .setFirstTextFieldBorderColor(getResources().getColor(R.color.colorPrimaryDark))
+                        .setFirstButtonText("Ok")
+                        .setFirstTextFieldTextColor(getResources().getColor(R.color.grayas))
+                        .setSecondButtonText("Cancel")
+                        .setBackgroundColor(getResources().getColor(R.color.white))
+                        .setFirstButtonColor(colorDailogbtn)
+                        .setSecondButtonColor(colorDailogbtn)
+                        .withFirstButtonListner(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                                View parentLayout = findViewById(android.R.id.content);
+                                Snackbar.make(parentLayout, "Please Wait Do Not Close App", Snackbar.LENGTH_LONG)
+                                        .setAction("CLOSE", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+
+                                            }
+                                        })
+                                        .setActionTextColor(getResources().getColor(android.R.color.holo_red_light ))
+                                        .show();
+
+
+
+                                flatDialog.dismiss();
+                                progressBar.hide();
+                                name = flatDialog.getFirstTextField();
+                                avi.hide();
+                                new ZipAsyncTask().execute();
+                            }
+                        }).withSecondButtonListner(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        flatDialog.dismiss();
+                        progressBar.hide();
+                        avi.hide();
                     }
-                } else
-                {
-                    new SmartDialogBuilder(DisplayAllFilesActivity.this)
-                            .setTitle("Zip Failed")
-                            .setSubTitle("Please Select File ")
-                            .setCancalable(false)
-                            .setNegativeButtonHide(true) //hide cancel button
-                            .setPositiveButton("OK", new SmartDialogClickListener() {
-                                @Override
-                                public void onClick(SmartDialog smartDialog) {
-                                    smartDialog.dismiss();
-                                }
-                            }).build().show();
-                }
+                }).show();
             }
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        counter++;
+        reqNewInterstitial();
+
+
+    }
+    void unSelecting()
+    {
+        for (int i = 0 ; i< SelectedItemArrayList.size() ; i++)
+        {
+            SelectedItemArrayList.get(i).setSelected(false);
+        }
+    }
     private class ZipAsyncTask extends AsyncTask<String, String, String> {
 
         @Override
         protected void onPreExecute() {
             progressBar.setVisibility(View.VISIBLE);
+            progressBar.setClickable(true);
+            recyclerView.setAlpha((float) 0.2);
             super.onPreExecute();
         }
 
@@ -272,6 +358,86 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
                 @Override
                 public void run() {
                     //Do something after 100ms
+                    if (SelectedItemLocationArrayList.size() > 0) {
+                        try {
+                            zipper(SelectedItemLocationArrayList, name);
+
+                            new SmartDialogBuilder(DisplayAllFilesActivity.this)
+                                    .setTitle("Successfully Zipped")
+                                    .setSubTitle("Please Check Folder With App name In Internal Storage \n\n" +
+                                            Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name))
+                                    .setCancalable(false)
+                                    .setNegativeButtonHide(true) //hide cancel button
+                                    .setPositiveButton("OK", new SmartDialogClickListener() {
+                                        @Override
+                                        public void onClick(SmartDialog smartDialog) {
+                                            smartDialog.dismiss();
+                                            progressBar.hide();
+                                            recyclerView.setAlpha(1);
+                                            unSelecting();
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    }).build().show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else
+                    {
+                        new SmartDialogBuilder(DisplayAllFilesActivity.this)
+                                .setTitle("Zip Failed")
+                                .setSubTitle("Please Select File ")
+                                .setCancalable(false)
+                                .setNegativeButtonHide(true) //hide cancel button
+                                .setPositiveButton("OK", new SmartDialogClickListener() {
+                                    @Override
+                                    public void onClick(SmartDialog smartDialog) {
+                                        smartDialog.dismiss();
+                                    }
+                                }).build().show();
+                    }
+
+                }
+            }, 2000);
+            super.onPostExecute(s);
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            addingToZipFile();
+            return null;
+        }
+    }
+
+    private class UNZipAsyncTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            progressBar.setVisibility(View.VISIBLE);
+            avi.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //Do something after 100ms
+                    avi.hide();
+                    new SmartDialogBuilder(DisplayAllFilesActivity.this)
+                            .setTitle("Successfully UnZipped")
+                            .setCancalable(true)
+                            .setNegativeButtonHide(true) //hide cancel button
+                            .setPositiveButton("OK", new SmartDialogClickListener() {
+                                @Override
+                                public void onClick(SmartDialog smartDialog) {
+
+                                    smartDialog.dismiss();
+                                }
+                            }).build().show();
                     recyclerView.setAlpha(1);
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(DisplayAllFilesActivity.this, "Successfull Unziped", Toast.LENGTH_LONG).show();
@@ -296,6 +462,7 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
         root = new File(String.valueOf(Environment.getExternalStorageDirectory()));
         previouspath = root.getAbsolutePath();
         ListDir(root);
+        progressBar.hide();
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(manager);
@@ -412,13 +579,13 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
         return extension;
     }
 
-    public void addingToZipFile()
-    {
+    public void addingToZipFile() {
         for (int i = 0 ; i < ModelClasslist.size() ; i++)
         {
             if (ModelClasslist.get(i).isSelected())
             {
-                SelectedItemArrayList.add(ModelClasslist.get(i).getLocation());
+                SelectedItemLocationArrayList.add(ModelClasslist.get(i).getLocation());
+                SelectedItemArrayList.add(ModelClasslist.get(i));
             }
         }
     }
@@ -440,7 +607,7 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
 
         @Override
         protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
+            progressBar.show();
             super.onPreExecute();
         }
 
@@ -452,7 +619,7 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
                 @Override
                 public void run() {
                     //Do something after 100ms
-                    progressBar.setVisibility(View.GONE);
+                    progressBar.hide();
 
                 }
             }, 500);
@@ -513,7 +680,7 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
         @Override
         protected void onPreExecute() {
 
-            progressBar.setVisibility(View.VISIBLE);
+            progressBar.show();
             super.onPreExecute();
         }
 
@@ -526,7 +693,7 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
                 public void run() {
                     //Do something after 100ms
 
-                    progressBar.setVisibility(View.GONE);
+                    progressBar.hide();
                 }
             }, 500);
             super.onPostExecute(s);
@@ -1085,6 +1252,7 @@ public class DisplayAllFilesActivity extends AppCompatActivity implements Displa
             }
         } else {
             super.onBackPressed();
+            reqNewInterstitial();
         }
     }
     @Override

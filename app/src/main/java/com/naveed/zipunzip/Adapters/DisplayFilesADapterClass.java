@@ -114,6 +114,7 @@ public class DisplayFilesADapterClass extends RecyclerView.Adapter<DisplayFilesA
             playicon = itemView.findViewById(R.id.imgPlayVidesdasd);
             this.onfolderlistner = onfolderlistner;
             checkBox = itemView.findViewById(R.id.rcv_check);
+            checkBox.setClickable(false);
 
             itemView.setOnClickListener(this);
 

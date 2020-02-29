@@ -1,13 +1,18 @@
 package com.naveed.zipunzip.Fragments.ZipFiles;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -23,8 +28,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.flatdialoglibrary.dialog.FlatDialog;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.naveed.zipunzip.Activities.DisplayAllFilesActivity;
 import com.naveed.zipunzip.Adapters.DisplayZIPADapterClass;
+import com.naveed.zipunzip.Interfaces.OnBackPressedListener;
 import com.naveed.zipunzip.Models.DisplayFilesModelClass;
 import com.naveed.zipunzip.R;
 import com.rahman.dialog.Activity.SmartDialog;
@@ -41,21 +49,33 @@ import java.util.Objects;
 
 import ir.mahdi.mzip.zip.ZipArchive;
 
-public class ZipFileFragment extends Fragment implements DisplayZIPADapterClass.Onfolderlistner1 {
+import static com.naveed.zipunzip.Activities.DisplayAllFilesActivity.counter;
+
+public class ZipFileFragment extends Fragment implements DisplayZIPADapterClass.Onfolderlistner1 ,
+        OnBackPressedListener {
 
     RecyclerView recyclerView;
     ArrayList<DisplayFilesModelClass> Modelclasslist;
     DisplayZIPADapterClass adapter;
-    ProgressBar progressBar;
+    AVLoadingIndicatorView progressBar;
     View layoutdialog;
+    boolean checkdoInbackground = false;
     File zipFile , targetDirectory;
     String zipfilelocation , targetdirectorylocation;
 
     AVLoadingIndicatorView avi;
+    LoadZipFiles loadZipFiles;
+    int pos = 0;
 
 
     Button cancel , extracthere , extractto , setpasswordbtn;
+    InterstitialAd interstitialAd;
 
+    public void reqNewInterstitial() {
+        interstitialAd = new InterstitialAd(getActivity());
+        interstitialAd.setAdUnitId(getResources().getString(R.string.Interstitial_ID));
+        interstitialAd.loadAd(new AdRequest.Builder().build());
+    }
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -68,64 +88,39 @@ public class ZipFileFragment extends Fragment implements DisplayZIPADapterClass.
         extracthere = root.findViewById(R.id.btnextracthere);
         extractto = root.findViewById(R.id.btnextractto);
 
-
-
         avi = root.findViewById(R.id.avi);
+        avi.setIndicatorColor(getResources().getColor(R.color.colorPrimary));
         avi.hide();
 
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                layoutdialog.setVisibility(View.GONE);
-
-            }
-        });
-
-        extracthere.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                layoutdialog.setVisibility(View.GONE);
-
-
-                new SmartDialogBuilder(getActivity())
-                        .setTitle("Smart Dialog")
-                        .setSubTitle("This is the alert dialog to showing alert to user")
-                        .setCancalable(true)
-                         //set sub title font
-                        .setNegativeButtonHide(true) //hide cancel button
-                        .setPositiveButton("OK", new SmartDialogClickListener() {
-                            @Override
-                            public void onClick(SmartDialog smartDialog) {
-                                new ZipAsyncTask().execute();
-                                smartDialog.dismiss();
-                            }
-                        }).build().show();
-
-
-            }
-        });
-
-        extractto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-            }
-        });
-
-        Modelclasslist = new ArrayList<>();
-        walkdirRAR(Environment.getExternalStorageDirectory());
-        new videoAsyncTask().execute();
+        loadZipFiles = new LoadZipFiles();
+        loadZipFiles.execute();
         return root;
     }
 
-    private class videoAsyncTask extends AsyncTask<String,String,String> {
+    @Override
+    public void onStop() {
+        if(loadZipFiles != null && loadZipFiles.getStatus() == AsyncTask.Status.RUNNING) {
+            loadZipFiles.cancel(true);
+        }
+        super.onStop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(loadZipFiles != null && loadZipFiles.getStatus() == AsyncTask.Status.RUNNING) {
+            loadZipFiles.cancel(true);
+        }
+    }
+
+
+    public class LoadZipFiles extends AsyncTask<String,String,String> {
 
 
         @Override
         protected void onPreExecute() {
+            Modelclasslist = new ArrayList<>();
             progressBar.setVisibility(View.VISIBLE);
+            checkdoInbackground = true;
             super.onPreExecute();
         }
         @Override
@@ -143,11 +138,14 @@ public class ZipFileFragment extends Fragment implements DisplayZIPADapterClass.
             super.onPostExecute(s);
         }@Override
         protected String doInBackground(String... strings) {
-
-
+            if(checkdoInbackground) {
+                walkdirRAR(Environment.getExternalStorageDirectory());
+            }
             return null;
         }
     }
+
+
 
     private class ZipAsyncTask extends AsyncTask<String,String,String> {
 
@@ -165,6 +163,22 @@ public class ZipFileFragment extends Fragment implements DisplayZIPADapterClass.
                 public void run() {
                     //Do something after 100ms
                     avi.hide();
+                    new SmartDialogBuilder(getActivity())
+                            .setTitle("Successfully UnZipped")
+                            .setSubTitle("Please Check Folder With App name In Internal Storage \n\n" + Modelclasslist.get(pos).getLocation())
+                            .setCancalable(true)
+                            //set sub title font
+                            .setNegativeButtonHide(true) //hide cancel button
+                            .setPositiveButton("OK", new SmartDialogClickListener() {
+                                @Override
+                                public void onClick(SmartDialog smartDialog) {
+
+                                    smartDialog.dismiss();
+                                    counter++;
+
+
+                                }
+                            }).build().show();
                     recyclerView.setAlpha(1);
                     layoutdialog.setVisibility(View.GONE);
                     Toast.makeText(getActivity(),"Successfull Unziped" ,Toast.LENGTH_LONG).show();
@@ -256,22 +270,10 @@ public class ZipFileFragment extends Fragment implements DisplayZIPADapterClass.
                     @Override
                     public void onClick(View view) {
 
-                        new SmartDialogBuilder(getActivity())
-                                .setTitle("Successfully UnZipped")
-                                .setSubTitle("Please Check Folder With App name In Internal Storage \n\n" + Modelclasslist.get(position).getLocation())
-                                .setCancalable(true)
-                                //set sub title font
-                                .setNegativeButtonHide(true) //hide cancel button
-                                .setPositiveButton("OK", new SmartDialogClickListener() {
-                                    @Override
-                                    public void onClick(SmartDialog smartDialog) {
-                                        new ZipAsyncTask().execute();
-                                        smartDialog.dismiss();
-
-
-                                    }
-                                }).build().show();
+                        new ZipAsyncTask().execute();
+                        pos = position;
                         flatDialog.dismiss();
+
 
                     }
                 })
@@ -283,6 +285,8 @@ public class ZipFileFragment extends Fragment implements DisplayZIPADapterClass.
                         intent.putExtra("category", "Internal Storage");
                         intent.putExtra("loc" , zipfilelocation);
                         startActivity(intent);
+                        flatDialog.dismiss();
+                        recyclerView.setAlpha(1);
                     }
                 }).withThirdButtonListner(new View.OnClickListener() {
             @Override
